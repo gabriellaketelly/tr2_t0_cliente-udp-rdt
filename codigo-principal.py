@@ -3,15 +3,38 @@ import time
 
 SERVIDOR = "137.131.178.229"
 PORTA    = 8080
-GRUPO    = "grupo01"   # substitua pelo seu grupo
+GRUPO    = "grupo08"   
 
 def criar_socket(timeout=5.0):
-    # cria e configura o socket UDP
-    ...
+    cliente_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    return cliente_socket
 
-def ping(sock, servidor):
+def ping(cliente_socket, servidor):
     # envia PING, mede RTT, retorna float em ms
-    ...
+        # envia PING, mede RTT, retorna float em ms
+    inicio = time.time()
+    cliente_socket.sendto(b"PING", servidor)
+
+    try:
+        cliente_socket.settimeout(5.0)
+        dados, endereco_servidor = cliente_socket.recvfrom(65507)
+        dados = dados.decode()
+
+        # print("dados:", dados)
+
+        resposta, guardar_tempo_servidor = dados.split("|")
+
+        if resposta == "PONG":
+            rtt = (time.time() - inicio)*1000
+            return rtt, guardar_tempo_servidor
+        else:
+            print("Resposta inesperada:", resposta)
+            return None, None
+
+    except socket.timeout:
+        print("O tempo expirou")
+        return None, None
+
 
 def hello(sock, servidor, grupo):
     # envia HELLO, parseia OK, retorna dict com os campos
@@ -22,7 +45,7 @@ def requisitar_segmento(sock, servidor, seq=0):
     ...
 
 def main():
-    sock = criar_socket()
+    cliente_socket = criar_socket()
     servidor = (SERVIDOR, PORTA)
 
     print("=== Tarefa 0 — RDT-UnB Explorer ===")
@@ -30,7 +53,9 @@ def main():
     print()
 
     # Passo 1 — PING
-    ...
+    rtt, tempo_servidor_anotado = ping(cliente_socket, servidor)
+
+    #print(f"rtt:{rtt}, tempo:{tempo_servidor_anotado}")
 
     # Passo 2 — HELLO
     ...
