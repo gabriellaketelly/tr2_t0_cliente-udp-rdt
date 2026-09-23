@@ -11,7 +11,6 @@ def criar_socket(timeout=5.0):
 
 def ping(cliente_socket, servidor):
     # envia PING, mede RTT, retorna float em ms
-        # envia PING, mede RTT, retorna float em ms
     inicio = time.time()
     cliente_socket.sendto(b"PING", servidor)
 
@@ -20,7 +19,7 @@ def ping(cliente_socket, servidor):
         dados, endereco_servidor = cliente_socket.recvfrom(65507)
         dados = dados.decode()
 
-        # print("dados:", dados)
+        # print("dados:", dados) -> para testar 
 
         resposta, guardar_tempo_servidor = dados.split("|")
 
@@ -55,7 +54,7 @@ def main():
     # Passo 1 — PING
     rtt, tempo_servidor_anotado = ping(cliente_socket, servidor)
 
-    #print(f"rtt:{rtt}, tempo:{tempo_servidor_anotado}")
+    #print(f"rtt:{rtt}, tempo:{tempo_servidor_anotado}") -> para testar
 
     # Passo 2 — HELLO
     ...
