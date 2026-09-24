@@ -72,9 +72,29 @@ def hello(sock, servidor, grupo):
 
 
 def requisitar_segmento(sock, servidor, seq=0):
-    # envia REQ seq=0, recebe DATA, retorna bytes do payload
-    ...
-    
+    pacote = f"REQ|seq={seq}"
+    sock.sendto(pacote.encode("utf-8"), servidor)
+
+    try:
+        sock.settimeout(5.0)
+        dados, endereco_servidor = sock.recvfrom(65507)
+
+        separadores_encontrados = 0
+        indice_corte = 0
+
+        for i, byte in enumerate(dados):
+            if byte == ord(b'|'):
+                separadores_encontrados += 1
+                if separadores_encontrados == 3:
+                    indice_corte = i + 1
+                    break
+
+        payload = dados[indice_corte:]
+        return payload
+
+    except socket.timeout:
+        print("o tempo expirou")
+        return None
 
 def main():
     cliente_socket = criar_socket()
@@ -114,8 +134,19 @@ def main():
         print()
 
     # Passo 3 — REQ
-    # Ainda será implementado
-    ...
+    print("[3] REQ seg=0")
+    
+    payload = requisitar_segmento(cliente_socket, servidor, seq=0)
+
+    if payload is not None:
+        tamanho_payload = len(payload)
+        primeiros_8 = payload[:8]
+        hex_str = " ".join(f"{b:02x}" for b in primeiros_8)
+
+        print(f"    Payload recebido: {tamanho_payload} bytes")
+        print(f"    Primeiros 8 bytes: {hex_str}")
+    else:
+        print("    Falha ao receber o payload.")
 
 
 if __name__ == "__main__":
