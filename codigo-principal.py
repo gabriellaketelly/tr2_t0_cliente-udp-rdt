@@ -3,7 +3,7 @@ import time
 
 SERVIDOR = "137.131.178.229"
 PORTA = 8080
-GRUPO = "grupo06"
+GRUPO = "grupo08"
 
 
 def criar_socket(timeout=5.0):
